@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test gestione messaggi</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="mode-toggle" onclick="toggleDarkMode()">Toggle Dark Mode</div>
+    <h1>Test gestione messaggi</h1>
+    
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <ul class="flashes">
+                {% for category, message in messages %}
+                    <li class="{{ category }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    {% endwith %}
+    
+    <form method="POST">
+        <input type="text" name="message" required placeholder="Type your message...">
+        <button type="submit">Post Message</button>
+    </form>
+    
+    <form action="{{ url_for('upload_file') }}" method="POST" enctype="multipart/form-data">
+        <input type="file" name="file">
+        <button type="submit">Upload File</button>
+    </form>
+    
+    <h2>Messages:</h2>
+    <ul>
+        {% for message in messages %}
+            <li>
+                <div>
+                    {{ message.text }}
+                    <span class="timestamp">{{ message.timestamp }}</span>
+                    <span class="reversed">{{ message.text|reverse }}</span>
+                </div>
+                <a href="{{ url_for('delete_message', message_id=loop.index0) }}" class="delete">Delete</a>
+            </li>
+        {% endfor %}
+    </ul>
+
+    <script>
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark-mode');
+            localStorage.setItem('darkMode', document.body.classList.contains('dark-mode'));
+        }
+
+        // Check for saved dark mode preference
+        if (localStorage.getItem('darkMode') === 'true') {
+            document.body.classList.add('dark-mode');
+        }
+    </script>
+</body>
+</html>
